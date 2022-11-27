@@ -11,12 +11,13 @@ const UseQueryPage = () => {
 
   useQuery({
     queryKey: ['fetch'],
-    queryFn: async () =>
+    queryFn: async ({ signal }) =>
       axios(APIRoutes.fetch, {
         params: {
           name: 'query',
           id,
         },
+        signal,
       }),
     onSuccess: () => console.log('done useQuery'),
     onError: (error) => {

@@ -9,6 +9,8 @@ const AxiosPage = () => {
   const id = useId();
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchAxios = async () => {
       try {
         await axios(APIRoutes.fetch, {
@@ -16,14 +18,25 @@ const AxiosPage = () => {
             name: 'axios',
             id,
           },
+          signal: controller.signal,
         });
         console.log('done axios');
       } catch (error) {
-        console.error(error);
+        if (axios.isAxiosError(error)) {
+          if (error.name === 'CanceledError') {
+            console.log('axios canceled');
+          }
+        } else {
+          console.error(error);
+        }
       }
     };
 
     fetchAxios();
+
+    return () => {
+      controller.abort();
+    };
   }, [id]);
 
   return (

@@ -8,17 +8,30 @@ const FetchPage = () => {
   const id = useId();
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchApi = async () => {
       try {
-        await fetch(`${APIRoutes.fetch}?name=fetch&id=${id}`);
+        await fetch(`${APIRoutes.fetch}?name=fetch&id=${id}`, {
+          signal: controller.signal,
+        });
         console.log('done fetch');
       } catch (e) {
         const error = e as Error;
-        console.error(error);
+
+        if (error.name === 'AbortError') {
+          console.log('fetch canceled');
+        } else {
+          console.error(error);
+        }
       }
     };
 
     fetchApi();
+
+    return () => {
+      controller.abort();
+    };
   }, [id]);
 
   return (
